@@ -158,7 +158,7 @@ WHERE
 				WHEN last_seen_at = '0001-01-01 00:00:00'::timestamp without time zone THEN 0
 				ELSE 1
 			END,
-			last_seen_at,
+			-EXTRACT(EPOCH FROM last_seen_at),
 			email
 		) > (
 			SELECT
@@ -167,7 +167,7 @@ WHERE
 					WHEN last_seen_at = '0001-01-01 00:00:00'::timestamp without time zone THEN 0
 					ELSE 1
 				END,
-				last_seen_at,
+				-EXTRACT(EPOCH FROM last_seen_at),
 				email
 			FROM
 				users
@@ -240,7 +240,8 @@ ORDER BY
 		ELSE 1
 	END ASC,
 	last_seen_at DESC,
-	email ASC OFFSET @offset_opt
+	email ASC
+OFFSET @offset_opt
 LIMIT
 	-- A null limit means "no limit", so 0 means return all
 	NULLIF(@limit_opt :: int, 0);
