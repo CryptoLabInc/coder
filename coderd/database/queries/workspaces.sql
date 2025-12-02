@@ -337,11 +337,16 @@ WHERE
 	ORDER BY
 		-- To ensure that 'favorite' workspaces show up first in the list only for their owner.
 		CASE WHEN owner_id = @requester_id AND favorite THEN 0 ELSE 1 END ASC,
+		-- Order by running workspaces
 		(latest_build_completed_at IS NOT NULL AND
 			latest_build_canceled_at IS NULL AND
 			latest_build_error IS NULL AND
 			latest_build_transition = 'start'::workspace_transition) DESC,
-		LOWER(owner_username) ASC,
+		-- Order by last used
+		last_used_at DESC,
+		-- Order by owner email
+		LOWER(owner_email) ASC,
+		-- Order by workspace name
 		LOWER(name) ASC
 	LIMIT
 		CASE
