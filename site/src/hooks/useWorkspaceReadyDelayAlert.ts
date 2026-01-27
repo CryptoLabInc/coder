@@ -2,7 +2,7 @@ import type {
 	AgentConnectionTiming,
 	WorkspaceBuildTimings,
 } from "api/typesGenerated";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type WorkspaceReadyDelayAlertState = {
 	shouldShow: boolean;
@@ -16,31 +16,40 @@ export const useWorkspaceReadyDelayAlert = (
 	enabled: boolean,
 ): WorkspaceReadyDelayAlertState => {
 	const [shouldShow, setShouldShow] = useState(false);
+	const emptySinceRef = useRef<number | null>(null);
 
 	useEffect(() => {
 		if (!enabled) {
 			setShouldShow(false);
+			emptySinceRef.current = null;
 			return;
 		}
 
 		const checkDelay = () => {
 			if (!timings?.agent_connection_timings) {
 				setShouldShow(false);
+				emptySinceRef.current = null;
+				return;
+			}
+			const list = timings.agent_connection_timings;
+			const now = Date.now();
+			if (list.length === 0) {
+				if (emptySinceRef.current === null) {
+					emptySinceRef.current = now;
+				}
+				setShouldShow(now - emptySinceRef.current >= DELAY_THRESHOLD_MS);
 				return;
 			}
 
-			const now = Date.now();
-			const hasDelayedConnection = timings.agent_connection_timings.some(
-				(timing: AgentConnectionTiming) => {
-					if (timing.ended_at !== INVALID_ENDED_AT) {
-						return false;
-					}
-
-					const startedAt = new Date(timing.started_at).getTime();
-					const elapsed = now - startedAt;
-					return elapsed >= DELAY_THRESHOLD_MS;
-				},
-			);
+			emptySinceRef.current = null;
+			const hasDelayedConnection = list.some((timing: AgentConnectionTiming) => {
+				if (timing.ended_at !== INVALID_ENDED_AT) {
+					return false;
+				}
+				const startedAt = new Date(timing.started_at).getTime();
+				const elapsed = now - startedAt;
+				return elapsed >= DELAY_THRESHOLD_MS;
+			});
 
 			setShouldShow(hasDelayedConnection);
 		};
