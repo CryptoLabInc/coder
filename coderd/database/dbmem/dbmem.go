@@ -10261,6 +10261,27 @@ func (q *FakeQuerier) UpdateWorkspace(_ context.Context, arg database.UpdateWork
 	return database.WorkspaceTable{}, sql.ErrNoRows
 }
 
+func (q *FakeQuerier) UpdateWorkspaceTemplateID(_ context.Context, arg database.UpdateWorkspaceTemplateIDParams) (database.WorkspaceTable, error) {
+	if err := validateDatabaseType(arg); err != nil {
+		return database.WorkspaceTable{}, err
+	}
+
+	q.mutex.Lock()
+	defer q.mutex.Unlock()
+
+	for i, workspace := range q.workspaces {
+		if workspace.Deleted || workspace.ID != arg.ID {
+			continue
+		}
+		workspace.TemplateID = arg.TemplateID
+		workspace.UpdatedAt = arg.UpdatedAt
+		q.workspaces[i] = workspace
+		return workspace, nil
+	}
+
+	return database.WorkspaceTable{}, sql.ErrNoRows
+}
+
 func (q *FakeQuerier) UpdateWorkspaceAgentConnectionByID(_ context.Context, arg database.UpdateWorkspaceAgentConnectionByIDParams) error {
 	if err := validateDatabaseType(arg); err != nil {
 		return err
