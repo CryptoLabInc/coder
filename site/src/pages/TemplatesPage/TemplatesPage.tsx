@@ -39,6 +39,7 @@ export const TemplatesPage: FC = () => {
 				canCreateTemplates={permissions.createTemplates}
 				examples={examplesQuery.data}
 				templates={templatesQuery.data}
+				hideBlockedTemplates={!permissions.deleteTemplates}
 			/>
 		</>
 	);

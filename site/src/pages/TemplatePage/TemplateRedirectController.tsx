@@ -1,15 +1,27 @@
 import type { Organization } from "api/typesGenerated";
+import { useAuthContext } from "contexts/auth/AuthProvider";
 import { useDashboard } from "modules/dashboard/useDashboard";
 import type { FC } from "react";
 import { Navigate, Outlet, useLocation, useParams } from "react-router-dom";
+import { isBlockedTemplateRouteName } from "utils/templates";
 
 export const TemplateRedirectController: FC = () => {
 	const { organizations, showOrganizations } = useDashboard();
+	const { permissions } = useAuthContext();
 	const { organization, template } = useParams() as {
 		organization?: string;
 		template: string;
 	};
 	const location = useLocation();
+
+	if (
+		!permissions?.deleteTemplates &&
+		!organization &&
+		isBlockedTemplateRouteName(template) &&
+		location.pathname === `/templates/${template}`
+	) {
+		return <Navigate to="/templates" replace />;
+	}
 
 	// We redirect templates without an organization to the default organization,
 	// as that's likely what any links floating around expect.

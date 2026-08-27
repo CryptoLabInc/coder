@@ -94,6 +94,7 @@ const WorkspacesPage: FC = () => {
 				templatesFetchStatus={templatesQuery.status}
 				workspaces={data?.workspaces}
 				error={error}
+				hideBlockedTemplates={!permissions.deleteTemplates}
 				count={data?.count}
 				page={pagination.page}
 				limit={pagination.limit}

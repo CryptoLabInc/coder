@@ -45,6 +45,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { createDayString } from "utils/createDayString";
 import { docs } from "utils/docs";
 import {
+	filterBlockedWorkspaceTemplates,
 	formatTemplateActiveDevelopers,
 	formatTemplateBuildTime,
 } from "utils/templates";
@@ -181,6 +182,7 @@ export interface TemplatesPageViewProps {
 	canCreateTemplates: boolean;
 	examples: TemplateExample[] | undefined;
 	templates: Template[] | undefined;
+	hideBlockedTemplates?: boolean;
 }
 
 export const TemplatesPageView: FC<TemplatesPageViewProps> = ({
@@ -190,9 +192,14 @@ export const TemplatesPageView: FC<TemplatesPageViewProps> = ({
 	canCreateTemplates,
 	examples,
 	templates,
+	hideBlockedTemplates = true,
 }) => {
-	const isLoading = !templates;
-	const isEmpty = templates && templates.length === 0;
+	const visibleTemplates = filterBlockedWorkspaceTemplates(
+		templates,
+		hideBlockedTemplates,
+	);
+	const isLoading = !visibleTemplates;
+	const isEmpty = visibleTemplates && visibleTemplates.length === 0;
 	const navigate = useNavigate();
 
 	const createTemplateAction = showOrganizations ? (
@@ -248,7 +255,7 @@ export const TemplatesPageView: FC<TemplatesPageViewProps> = ({
 								examples={examples ?? []}
 							/>
 						) : (
-							templates?.map((template) => (
+							visibleTemplates?.map((template) => (
 								<TemplateRow
 									key={template.id}
 									showOrganizations={showOrganizations}
