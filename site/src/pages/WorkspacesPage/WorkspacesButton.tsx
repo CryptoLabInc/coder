@@ -40,7 +40,8 @@ export const WorkspacesButton: FC<WorkspacesButtonProps> = ({
 	const processed = sortTemplatesByUsersDesc(
 		(templates ?? []).filter(
 			(template) =>
-				template.name.toLowerCase() !== "heaan2-0.1.1-playground-a100",
+				(template.display_name || template.name).toLowerCase() !==
+				"heaan2-0.1.1 playground (a100)",
 		),
 		searchTerm,
 	);

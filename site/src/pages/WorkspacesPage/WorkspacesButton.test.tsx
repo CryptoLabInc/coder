@@ -19,22 +19,22 @@ describe("WorkspacesButton", () => {
 		jest.useRealTimers();
 	});
 
-	it("hides the blocked template name from the new workspace menu", async () => {
+	it("hides the blocked template display name from the new workspace menu", async () => {
 		jest.useFakeTimers();
 		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 		const blockedTemplate: Template = {
 			...MockTemplate,
 			id: "heaan2-011-a100",
-			name: "HEAAN2-0.1.1-playground-a100",
-			display_name: "Blocked A100 template",
-			active_user_count: 119,
+			name: "heaan2-011-a100",
+			display_name: "HEAAN2-0.1.1 Playground (A100)",
+			active_user_count: 120,
 		};
 		const enabledTemplate: Template = {
 			...MockTemplate,
-			id: "heaan2-current-a100",
-			name: "heaan2-current-playground-a100",
-			display_name: "HEAAN2-0.1.1 Playground (A100)",
-			active_user_count: 42,
+			id: "heaan2-020-a100",
+			name: "heaan2-020-a100",
+			display_name: "HEaaN2-0.2.0 Playground (A100)",
+			active_user_count: 101,
 		};
 
 		renderWorkspacesButton(
@@ -53,13 +53,12 @@ describe("WorkspacesButton", () => {
 			jest.runOnlyPendingTimers();
 		});
 
-		expect(screen.queryByText("Blocked A100 template")).not.toBeInTheDocument();
 		expect(
-			screen.getByText("HEAAN2-0.1.1 Playground (A100)").closest("a"),
-		).toHaveAttribute(
-			"href",
-			"/templates/heaan2-current-playground-a100/workspace",
-		);
+			screen.queryByText("HEAAN2-0.1.1 Playground (A100)"),
+		).not.toBeInTheDocument();
+		expect(
+			screen.getByText("HEaaN2-0.2.0 Playground (A100)").closest("a"),
+		).toHaveAttribute("href", "/templates/heaan2-020-a100/workspace");
 	});
 });
 
