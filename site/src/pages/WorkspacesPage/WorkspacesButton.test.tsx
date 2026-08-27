@@ -60,6 +60,39 @@ describe("WorkspacesButton", () => {
 			screen.getByText("HEaaN2-0.2.0 Playground (A100)").closest("a"),
 		).toHaveAttribute("href", "/templates/heaan2-020-a100/workspace");
 	});
+
+	it("shows the blocked template when blocked template filtering is disabled", async () => {
+		jest.useFakeTimers();
+		const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+		const blockedTemplate: Template = {
+			...MockTemplate,
+			id: "heaan2-011-a100",
+			name: "heaan2-011-a100",
+			display_name: "HEAAN2-0.1.1 Playground (A100)",
+			active_user_count: 120,
+		};
+
+		renderWorkspacesButton(
+			<WorkspacesButton
+				templates={[blockedTemplate]}
+				templatesFetchStatus="success"
+				hideBlockedTemplates={false}
+			>
+				New workspace
+			</WorkspacesButton>,
+		);
+
+		await act(async () => {
+			await user.click(screen.getByRole("button", { name: /new workspace/i }));
+		});
+		await act(async () => {
+			jest.runOnlyPendingTimers();
+		});
+
+		expect(
+			screen.getByText("HEAAN2-0.1.1 Playground (A100)").closest("a"),
+		).toHaveAttribute("href", "/templates/heaan2-011-a100/workspace");
+	});
 });
 
 function renderWorkspacesButton(element: JSX.Element) {
