@@ -866,3 +866,14 @@ GROUP BY workspaces.id, workspaces.name, latest_build.job_status, latest_build.j
 
 -- name: GetWorkspacesByTemplateID :many
 SELECT * FROM workspaces WHERE template_id = $1 AND deleted = false;
+
+-- name: UpdateWorkspaceTemplateID :one
+UPDATE
+	workspaces
+SET
+	template_id = $2,
+	updated_at = $3
+WHERE
+	id = $1
+	AND deleted = false
+RETURNING *;

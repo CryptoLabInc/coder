@@ -327,6 +327,24 @@ const waitBuildToBeFinished = async (
 	throw new JobError(data.job, version);
 };
 
+export const migrateWorkspaces = () => {
+	return {
+		mutationFn: ({
+			templateId,
+			targetTemplateId,
+			userEmails,
+		}: {
+			templateId: string;
+			targetTemplateId: string;
+			userEmails?: string[];
+		}) =>
+			API.migrateWorkspaces(templateId, {
+				target_template_id: targetTemplateId,
+				user_emails: userEmails,
+			}),
+	};
+};
+
 export class JobError extends Error {
 	public job: ProvisionerJob;
 	public version: TemplateVersion;

@@ -1,5 +1,6 @@
 import VariablesIcon from "@mui/icons-material/CodeOutlined";
 import SecurityIcon from "@mui/icons-material/LockOutlined";
+import MigrateIcon from "@mui/icons-material/MoveDownOutlined";
 import GeneralIcon from "@mui/icons-material/SettingsOutlined";
 import ScheduleIcon from "@mui/icons-material/TimerOutlined";
 import type { Template } from "api/typesGenerated";
@@ -43,6 +44,9 @@ export const Sidebar: FC<SidebarProps> = ({ template }) => {
 			</SidebarNavItem>
 			<SidebarNavItem href="schedule" icon={ScheduleIcon}>
 				Schedule
+			</SidebarNavItem>
+			<SidebarNavItem href="migrate" icon={MigrateIcon}>
+				Migrate Workspaces
 			</SidebarNavItem>
 		</BaseSidebar>
 	);

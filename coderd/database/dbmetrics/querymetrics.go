@@ -2520,6 +2520,13 @@ func (m queryMetricsStore) UpdateWorkspace(ctx context.Context, arg database.Upd
 	return workspace, err
 }
 
+func (m queryMetricsStore) UpdateWorkspaceTemplateID(ctx context.Context, arg database.UpdateWorkspaceTemplateIDParams) (database.WorkspaceTable, error) {
+	start := time.Now()
+	workspace, err := m.s.UpdateWorkspaceTemplateID(ctx, arg)
+	m.queryLatencies.WithLabelValues("UpdateWorkspaceTemplateID").Observe(time.Since(start).Seconds())
+	return workspace, err
+}
+
 func (m queryMetricsStore) UpdateWorkspaceAgentConnectionByID(ctx context.Context, arg database.UpdateWorkspaceAgentConnectionByIDParams) error {
 	start := time.Now()
 	err := m.s.UpdateWorkspaceAgentConnectionByID(ctx, arg)

@@ -16686,6 +16686,48 @@ func (q *sqlQuerier) UpdateWorkspace(ctx context.Context, arg UpdateWorkspacePar
 	return i, err
 }
 
+const updateWorkspaceTemplateID = `-- name: UpdateWorkspaceTemplateID :one
+UPDATE
+	workspaces
+SET
+	template_id = $2,
+	updated_at = $3
+WHERE
+	id = $1
+	AND deleted = false
+RETURNING id, created_at, updated_at, owner_id, organization_id, template_id, deleted, name, autostart_schedule, ttl, last_used_at, dormant_at, deleting_at, automatic_updates, favorite, next_start_at
+`
+
+type UpdateWorkspaceTemplateIDParams struct {
+	ID         uuid.UUID `db:"id" json:"id"`
+	TemplateID uuid.UUID `db:"template_id" json:"template_id"`
+	UpdatedAt  time.Time `db:"updated_at" json:"updated_at"`
+}
+
+func (q *sqlQuerier) UpdateWorkspaceTemplateID(ctx context.Context, arg UpdateWorkspaceTemplateIDParams) (WorkspaceTable, error) {
+	row := q.db.QueryRowContext(ctx, updateWorkspaceTemplateID, arg.ID, arg.TemplateID, arg.UpdatedAt)
+	var i WorkspaceTable
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.OwnerID,
+		&i.OrganizationID,
+		&i.TemplateID,
+		&i.Deleted,
+		&i.Name,
+		&i.AutostartSchedule,
+		&i.Ttl,
+		&i.LastUsedAt,
+		&i.DormantAt,
+		&i.DeletingAt,
+		&i.AutomaticUpdates,
+		&i.Favorite,
+		&i.NextStartAt,
+	)
+	return i, err
+}
+
 const updateWorkspaceAutomaticUpdates = `-- name: UpdateWorkspaceAutomaticUpdates :exec
 UPDATE
 	workspaces

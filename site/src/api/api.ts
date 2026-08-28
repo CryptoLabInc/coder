@@ -1032,6 +1032,17 @@ class ApiMethods {
 		return response.data;
 	};
 
+	migrateWorkspaces = async (
+		templateId: string,
+		data: { target_template_id: string; user_emails?: string[] },
+	): Promise<{ migrated_workspace_ids: string[]; skipped_workspace_ids: string[] }> => {
+		const response = await this.axios.post(
+			`/api/v2/templates/${templateId}/migrate-workspaces`,
+			data,
+		);
+		return response.data;
+	};
+
 	updateTemplateMeta = async (
 		templateId: string,
 		data: TypesGen.UpdateTemplateMeta,

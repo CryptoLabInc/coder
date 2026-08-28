@@ -4004,6 +4004,13 @@ func (q *querier) UpdateWorkspace(ctx context.Context, arg database.UpdateWorksp
 	return updateWithReturn(q.log, q.auth, fetch, q.db.UpdateWorkspace)(ctx, arg)
 }
 
+func (q *querier) UpdateWorkspaceTemplateID(ctx context.Context, arg database.UpdateWorkspaceTemplateIDParams) (database.WorkspaceTable, error) {
+	if err := q.authorizeContext(ctx, policy.ActionUpdate, rbac.ResourceSystem); err != nil {
+		return database.WorkspaceTable{}, err
+	}
+	return q.db.UpdateWorkspaceTemplateID(ctx, arg)
+}
+
 func (q *querier) UpdateWorkspaceAgentConnectionByID(ctx context.Context, arg database.UpdateWorkspaceAgentConnectionByIDParams) error {
 	if err := q.authorizeContext(ctx, policy.ActionUpdate, rbac.ResourceSystem); err != nil {
 		return err

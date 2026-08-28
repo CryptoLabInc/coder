@@ -628,6 +628,41 @@ func (c *Client) UnfavoriteWorkspace(ctx context.Context, workspaceID uuid.UUID)
 	return nil
 }
 
+// MigrateWorkspacesRequest is the request body for migrating workspaces
+// from one template to another.
+type MigrateWorkspacesRequest struct {
+	TargetTemplateID uuid.UUID `json:"target_template_id" validate:"required" format:"uuid"`
+	// UserEmails optionally restricts migration to workspaces owned by the
+	// specified users (identified by email). When empty, all workspaces on
+	// the source template are considered.
+	UserEmails []string `json:"user_emails,omitempty"`
+}
+
+// MigrateWorkspacesResponse contains the result of a workspace template migration.
+type MigrateWorkspacesResponse struct {
+	// MigratedWorkspaceIDs lists workspace IDs that were successfully migrated.
+	MigratedWorkspaceIDs []uuid.UUID `json:"migrated_workspace_ids"`
+	// SkippedWorkspaceIDs lists workspace IDs that were skipped because they were running.
+	SkippedWorkspaceIDs []uuid.UUID `json:"skipped_workspace_ids"`
+}
+
+// MigrateWorkspaces migrates all stopped workspaces from the given template
+// to the target template. Running workspaces are skipped and returned in
+// SkippedWorkspaceIDs.
+func (c *Client) MigrateWorkspaces(ctx context.Context, templateID uuid.UUID, req MigrateWorkspacesRequest) (MigrateWorkspacesResponse, error) {
+	path := fmt.Sprintf("/api/v2/templates/%s/migrate-workspaces", templateID)
+	res, err := c.Request(ctx, http.MethodPost, path, req)
+	if err != nil {
+		return MigrateWorkspacesResponse{}, err
+	}
+	defer res.Body.Close()
+	if res.StatusCode != http.StatusOK {
+		return MigrateWorkspacesResponse{}, ReadBodyAsError(res)
+	}
+	var resp MigrateWorkspacesResponse
+	return resp, json.NewDecoder(res.Body).Decode(&resp)
+}
+
 func (c *Client) WorkspaceTimings(ctx context.Context, id uuid.UUID) (WorkspaceBuildTimings, error) {
 	path := fmt.Sprintf("/api/v2/workspaces/%s/timings", id.String())
 	res, err := c.Request(ctx, http.MethodGet, path, nil)
