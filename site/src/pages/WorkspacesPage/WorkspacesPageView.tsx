@@ -25,6 +25,7 @@ import { TableToolbar } from "components/TableToolbar/TableToolbar";
 import { WorkspacesTable } from "pages/WorkspacesPage/WorkspacesTable";
 import type { FC } from "react";
 import type { UseQueryResult } from "react-query";
+import { filterBlockedWorkspaceTemplates } from "utils/templates";
 import { mustUpdateWorkspace } from "utils/workspace";
 import { WorkspaceHelpTooltip } from "./WorkspaceHelpTooltip";
 import { WorkspacesButton } from "./WorkspacesButton";
@@ -91,6 +92,10 @@ export const WorkspacesPageView: FC<WorkspacesPageViewProps> = ({
 	canChangeVersions,
 	hideBlockedTemplates = true,
 }) => {
+	const visibleTemplates = filterBlockedWorkspaceTemplates(
+		templates,
+		hideBlockedTemplates,
+	);
 	// Let's say the user has 5 workspaces, but tried to hit page 100, which does
 	// not exist. In this case, the page is not valid and we want to show a better
 	// error message.
@@ -101,7 +106,7 @@ export const WorkspacesPageView: FC<WorkspacesPageViewProps> = ({
 			<PageHeader
 				actions={
 					<WorkspacesButton
-						templates={templates}
+						templates={visibleTemplates}
 						templatesFetchStatus={templatesFetchStatus}
 						hideBlockedTemplates={hideBlockedTemplates}
 					>
@@ -223,7 +228,7 @@ export const WorkspacesPageView: FC<WorkspacesPageViewProps> = ({
 					checkedWorkspaces={checkedWorkspaces}
 					onCheckChange={onCheckChange}
 					canCheckWorkspaces={canCheckWorkspaces}
-					templates={templates}
+					templates={visibleTemplates}
 				/>
 			)}
 
