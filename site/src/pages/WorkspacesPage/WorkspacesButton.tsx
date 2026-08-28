@@ -22,7 +22,7 @@ import {
 } from "react-router-dom";
 import { filterBlockedWorkspaceTemplates } from "utils/templates";
 
-type TemplatesQuery = UseQueryResult<Template[]>;
+type TemplatesQuery = UseQueryResult<readonly Template[]>;
 
 interface WorkspacesButtonProps {
 	children?: ReactNode;

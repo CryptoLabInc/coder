@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 interface WorkspacesEmptyProps {
 	isUsingFilter: boolean;
-	templates?: Template[];
+	templates?: readonly Template[];
 	canCreateTemplate: boolean;
 }
 
