@@ -20,24 +20,31 @@ import {
 	Link as RouterLink,
 	type LinkProps as RouterLinkProps,
 } from "react-router-dom";
+import { filterBlockedWorkspaceTemplates } from "utils/templates";
 
-type TemplatesQuery = UseQueryResult<Template[]>;
+type TemplatesQuery = UseQueryResult<readonly Template[]>;
 
 interface WorkspacesButtonProps {
 	children?: ReactNode;
 	templatesFetchStatus: TemplatesQuery["status"];
 	templates: TemplatesQuery["data"];
+	hideBlockedTemplates?: boolean;
 }
 
 export const WorkspacesButton: FC<WorkspacesButtonProps> = ({
 	children,
 	templatesFetchStatus,
 	templates,
+	hideBlockedTemplates = true,
 }) => {
 	// Dataset should always be small enough that client-side filtering should be
 	// good enough. Can swap out down the line if it becomes an issue
 	const [searchTerm, setSearchTerm] = useState("");
-	const processed = sortTemplatesByUsersDesc(templates ?? [], searchTerm);
+	const processed = sortTemplatesByUsersDesc(
+		filterBlockedWorkspaceTemplates(templates ?? [], hideBlockedTemplates) ??
+			[],
+		searchTerm,
+	);
 
 	let emptyState: ReactNode = undefined;
 	if (templates?.length === 0) {

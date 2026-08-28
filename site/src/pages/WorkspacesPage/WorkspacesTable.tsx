@@ -39,7 +39,7 @@ export interface WorkspacesTableProps {
 	onUpdateWorkspace: (workspace: Workspace) => void;
 	onCheckChange: (checkedWorkspaces: readonly Workspace[]) => void;
 	canCheckWorkspaces: boolean;
-	templates?: Template[];
+	templates?: readonly Template[];
 	canCreateTemplate: boolean;
 }
 
